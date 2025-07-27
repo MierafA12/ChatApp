@@ -25,8 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text("Login Successful")),
       );
 
-      // TODO: Navigate to home/chat screen
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ChatScreen()));
+      
+       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ChatScreen()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Login Failed")),
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                    MaterialPageRoute(builder: (context) =>  SignUpScreen()),
                   );
                 },
                 child: const Text(
