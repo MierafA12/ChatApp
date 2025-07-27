@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_services.dart';
 import '../auth/register.dart';
+import '../chat/chat_list_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       
-       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ChatScreen()));
+       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ChatListScreen()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Login Failed")),
