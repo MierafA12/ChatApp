@@ -8,42 +8,50 @@ class AuthService {
 
   // SIGN UP
   Future<User?> signUp({
-  required String fullName,
-  required String email,
-  required String password,
-}) async {
-  try {
-    final credential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-
-    // Save fullName in Firestore or wherever needed
-    await FirebaseFirestore.instance.collection("users").doc(credential.user!.uid).set({
-      'fullName': fullName,
-      'email': email,
-      'uid': credential.user!.uid,
-    });
-
-    return credential.user;
-  } catch (e) {
-    print("Signup error: $e");
-    return null;
-  }
-}
-
-
-  // LOGIN
-  Future<String?> login({
+    required String fullName,
     required String email,
     required String password,
   }) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      return null;
-    } on FirebaseAuthException catch (e) {
-      return e.message;
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final uid = credential.user!.uid;
+
+      // Save user to Firestore
+      await _db.collection("users").doc(uid).set({
+        'uid': uid,
+        'fullName': fullName,
+        'email': email,
+        'phone': '', // default empty or use actual phone
+      });
+
+      return credential.user;
+    } catch (e) {
+      print("Signup error: $e");
+      rethrow;
     }
   }
 
-  // GET CURRENT USER
+  // LOGIN
+  Future<User?> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return credential.user;
+    } catch (e) {
+      print("Login error: $e");
+      rethrow;
+    }
+  }
+
+  // CURRENT USER
   User? get currentUser => _auth.currentUser;
 }
