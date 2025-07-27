@@ -13,11 +13,20 @@ class ChatListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chats'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
-            .where('uid', isNotEqualTo: currentUser!.uid) // exclude self
+            .where('uid', isNotEqualTo: currentUser!.uid)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
@@ -26,10 +35,17 @@ class ChatListScreen extends StatelessWidget {
 
           if (users.isEmpty) return const Center(child: Text("No other users yet."));
 
-          return ListView.builder(
+          return ListView.separated(
             itemCount: users.length,
+            separatorBuilder: (context, index) => const Divider(
+              color: Colors.purple,
+              thickness: 1,
+              indent: 16,
+              endIndent: 16,
+            ),
             itemBuilder: (ctx, index) {
               final userData = users[index].data() as Map<String, dynamic>;
+
               return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(
@@ -38,7 +54,7 @@ class ChatListScreen extends StatelessWidget {
                 ),
                 title: Text(userData['fullName']),
                 subtitle: Text(userData['email']),
-                onTap: () async {
+                onTap: () {
                   final otherUserId = userData['uid'];
                   final otherUserName = userData['fullName'];
                   final otherUserImage = userData['image'] ?? 'https://i.pravatar.cc/150?img=5';
