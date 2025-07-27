@@ -1,3 +1,4 @@
+import 'package:chat_app/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../../services/auth_services.dart';
 
@@ -10,39 +11,36 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final fullNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  final TextEditingController fullNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
-  final AuthService authService = AuthService();
+  bool isLoading = false;
 
-  void handleSignup() async {
+  void signUpUser() async {
     if (_formKey.currentState!.validate()) {
-      if (passwordController.text != confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Passwords do not match")),
+      setState(() => isLoading = true);
+      try {
+        await _authService.signUp(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+          fullName: fullNameController.text.trim(),
         );
-        return;
-      }
 
-      final user = await authService.signUp(
-        fullName: fullNameController.text.trim(),
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-
-      if (user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Signup Successful")),
+          const SnackBar(content: Text('Account created successfully!')),
         );
-        Navigator.pop(context); // Navigate to login or chat screen
-      } else {
+        // TODO: Navigate to home or login
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Signup Failed")),
+          SnackBar(content: Text(e.toString())),
         );
+      } finally {
+        setState(() => isLoading = false);
       }
     }
   }
@@ -50,85 +48,102 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey[50],
-      appBar: AppBar(
-        title: const Text("Sign Up"),
-        centerTitle: true,
-        backgroundColor: Colors.lightBlue,
-        elevation: 0,
-      ),
+      backgroundColor: const Color(0xFFE6DBFC),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: fullNameController,
-                decoration: const InputDecoration(
-                  labelText: "Full Name",
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value!.isEmpty ? "Enter full name" : null,
+              const SizedBox(height: 60),
+              const Text(
+                "Create Account",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF6422F4)),
               ),
+              const SizedBox(height: 10),
+              const Text("Fill in the details to get started", style: TextStyle(fontSize: 16, color: Colors.black54)),
+              const SizedBox(height: 30),
+
+              // Full Name
+              buildInput(fullNameController, "Full Name", Icons.person_outline, validator: (val) {
+                if (val == null || val.isEmpty) return "Enter your name";
+                return null;
+              }),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value!.isEmpty ? "Enter email" : null,
-              ),
+
+              // Phone
+              buildInput(phoneController, "Phone", Icons.phone_outlined, keyboardType: TextInputType.phone, validator: (val) {
+                if (val == null || val.length < 9) return "Enter a valid phone number";
+                return null;
+              }),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: phoneController,
-                decoration: const InputDecoration(
-                  labelText: "Phone Number",
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(),
-                ),
-              ),
+
+              // Email
+              buildInput(emailController, "Email", Icons.email_outlined, keyboardType: TextInputType.emailAddress, validator: (val) {
+                if (val == null || !val.contains('@')) return "Enter a valid email";
+                return null;
+              }),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value!.length < 6 ? "Min 6 characters" : null,
-              ),
+
+              // Password
+              buildInput(passwordController, "Password", Icons.lock_outline, obscure: true, validator: (val) {
+                if (val == null || val.length < 6) return "Password too short";
+                return null;
+              }),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: "Confirm Password",
-                  prefixIcon: Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value!.isEmpty ? "Confirm your password" : null,
-              ),
+
+              // Confirm Password
+              buildInput(confirmPasswordController, "Confirm Password", Icons.lock_reset, obscure: true, validator: (val) {
+                if (val != passwordController.text) return "Passwords do not match";
+                return null;
+              }),
               const SizedBox(height: 24),
+
+              // Sign Up Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: handleSignup,
+                  onPressed: isLoading ? null : signUpUser,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.lightBlue,
+                    backgroundColor: const Color(0xFF6422F4),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text("Sign Up", style: TextStyle(fontSize: 18)),
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Sign Up", style: TextStyle(fontSize: 16)),
                 ),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>  LoginScreen()),
+                  );
+                },
+                child: const Text("Already have an account? Login", style: TextStyle(color: Color(0xFF6422F4))),
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildInput(TextEditingController controller, String label, IconData icon,
+      {bool obscure = false, TextInputType keyboardType = TextInputType.text, String? Function(String?)? validator}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      keyboardType: keyboardType,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       ),
     );
   }
