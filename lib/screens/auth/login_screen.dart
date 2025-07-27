@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final authService = AuthService();
 
   void handleLogin() async {
+  try {
     final user = await authService.login(
       email: emailController.text.trim(),
       password: passwordController.text.trim(),
@@ -26,14 +27,18 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text("Login Successful")),
       );
 
-      
-       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ChatListScreen()));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login Failed")),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ChatListScreen()),
       );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Login Failed: $e")),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
