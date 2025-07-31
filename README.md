@@ -4,20 +4,7 @@ A modern real-time **Chat Application** built with **Flutter** and **Firebase**.
 
 ---
 
-## 📱 App Preview
 
-<table>
-  <tr>
-    <td><img src="screenshots/1.png" width="200"/></td>
-    <td><img src="screenshots/2.png" width="200"/></td>
-    <td><img src="screenshots/3.png" width="200"/></td>
-    <td><img src="screenshots/4.png" width="200"/></td>
-  </tr>
-</table>
-
-> Make sure you have a `screenshots` folder in your repo and add images named `1.png`, `2.png`, etc. with good resolution.
-
----
 
 ## ⚙️ Features
 
@@ -38,6 +25,20 @@ A modern real-time **Chat Application** built with **Flutter** and **Firebase**.
 | Firebase Firestore | Real-time NoSQL database          |
 | Firebase Storage | For profile images (optional)         |
 | GetX           | For state management and routing        |
+
+---
+
+## 📱 App Preview
+
+<table>
+  <tr>
+    <td><img src="screenshots/1.png" width="200"/></td>
+    <td><img src="screenshots/2.png" width="200"/></td>
+    <td><img src="screenshots/3.png" width="200"/></td>
+    <td><img src="screenshots/4.png" width="200"/></td>
+  </tr>
+</table>
+
 
 ---
 
