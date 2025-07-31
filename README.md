@@ -31,11 +31,11 @@ A modern real-time **Chat Application** built with **Flutter** and **Firebase**.
 ## 📱 App Preview
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="lib/assets/images/home.png" width="200" />
-  <img src="lib/assets/images/login.png" width="200" />
-  <img src="lib/assets/images/signup.png" width="200" />
-  <img src="lib/assets/images/chatlist.png" width="200" />
-  <img src="lib/assets/images/chattpage.png" width="200" />
+  <img src="assets/images/home.png" width="200" />
+  <img src="assets/images/login.png" width="200" />
+  <img src="assets/images/signup.png" width="200" />
+  <img src="assets/images/chatlist.png" width="200" />
+  <img src="assets/images/chatt.png" width="200" />
 </div>
 
 ---
